@@ -1,0 +1,5 @@
+{
+  "_README": "Plays one finished clip on a loop. Put the MP4 in clips/ and point src at it.",
+  "name": "Showreel clip",
+  "slides": [ { "type": "video", "src": "clips/showreel.mp4", "seconds": 46 } ]
+}

@@ -1,0 +1,65 @@
+{
+  "_README": "A signage SET: the slides both TVs rotate through. Pushing a set live = making it the set the screen page loads. DRAFT copy: run it past voice-and-brand.md before it goes live. Hours/phone/address come from doctrine-get pgh-facts, never typed from memory. Just In items come live from the store (sample below until wired).",
+  "name": "Default — everyday",
+  "slides": [
+    {
+      "type": "welcome",
+      "seconds": 18
+    },
+    {
+      "type": "just-in",
+      "seconds": 18,
+      "sample": true,
+      "items": [
+        {
+          "title": "Kiesel Zeus",
+          "price": "$—",
+          "image": "assets/sample-guitar.jpg"
+        }
+      ],
+      "line": "Ask to play it."
+    },
+    {
+      "type": "bench",
+      "seconds": 18,
+      "kicker": "On the bench",
+      "headline": "Setups & repairs",
+      "line": "Ask at the counter. We'll look it over with you."
+    },
+    {
+      "type": "lessons",
+      "seconds": 18,
+      "kicker": "Lessons",
+      "headline": "Learn to play here",
+      "line": "Ask at the counter about lesson times."
+    },
+    {
+      "type": "we-buy",
+      "seconds": 18,
+      "kicker": "Buy ◆ Sell ◆ Talk guitars",
+      "headline": "We buy guitars",
+      "line": "Bring it in. We'll take a look."
+    },
+    {
+      "type": "hours",
+      "seconds": 16,
+      "placeholder": true,
+      "kicker": "Hours",
+      "headline": "Holiday hours",
+      "rows": [
+        [
+          "[day]",
+          "[hours from pgh-facts]"
+        ],
+        [
+          "[day]",
+          "[hours from pgh-facts]"
+        ],
+        [
+          "[day]",
+          "Closed"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+<!-- PGH slideshow slide 1 — dusk scene BACKGROUND (no text; headline comes from the slideshow H1 overlay). 3200x1200 = Broadcast slideshow desktop size. -->
+<svg width="3200" height="1200" viewBox="0 0 3200 1200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#15352a"/><stop offset="0.46" stop-color="#3b4936"/><stop offset="0.75" stop-color="#9a6238"/><stop offset="1" stop-color="#d77f3c"/>
+</linearGradient>
+</defs>
+<rect x="0" y="0" width="3200" height="1200" fill="url(#dusk)"/>
+<circle cx="1480" cy="190" r="6" fill="#f4ead0" opacity="0.8"/><circle cx="1720" cy="140" r="5" fill="#f4ead0" opacity="0.7"/><circle cx="1980" cy="230" r="6.5" fill="#f4ead0" opacity="0.8"/><circle cx="2240" cy="160" r="5" fill="#f4ead0" opacity="0.7"/><circle cx="2520" cy="270" r="6" fill="#f4ead0" opacity="0.75"/><circle cx="2760" cy="180" r="5" fill="#f4ead0" opacity="0.7"/><circle cx="3010" cy="250" r="5.5" fill="#f4ead0" opacity="0.75"/><circle cx="1620" cy="360" r="4.5" fill="#f4ead0" opacity="0.6"/><circle cx="2360" cy="400" r="4.5" fill="#f4ead0" opacity="0.6"/><circle cx="2900" cy="430" r="4.5" fill="#f4ead0" opacity="0.6"/>
+<circle cx="2090" cy="840" r="300" fill="#ef9a52"/><circle cx="2090" cy="840" r="196" fill="#f7b86c"/>
+<path d="M1300 1080 L1300 940 L1382 888 L1820 888 L1892 940 L2240 940 L2300 900 L3200 900 L3200 1080 Z" fill="#9a7a50" opacity="0.85"/>
+<path d="M1500 1080 L1500 800 L1600 740 L2120 740 L2232 812 L2520 812 L2592 760 L3200 760 L3200 1080 Z" fill="#2b4632"/>
+<rect x="0" y="1080" width="3200" height="120" fill="#102619"/>
+<!-- howling wolf silhouette on the mesa ridge, left of the sun, howling up toward it -->
+<g transform="translate(1815,580)" fill="#0b1d12">
+<path d="M168,6 L150,26 L141,33 Q122,45 113,74 L110,160 L93,160 L98,126 Q96,150 73,150 L40,150 L9,160 Q-7,150 -5,118 L3,96 Q23,78 65,68 Q92,60 95,40 L91,15 L105,32 L117,12 L129,33 Q143,22 168,6 Z"/>
+<path d="M-5,112 Q-30,120 -34,140 Q-18,150 0,150 Q-8,132 3,118 Z"/>
+</g>
+<path d="M2486 1080 L2486 872 M2486 940 C2426 940 2418 896 2418 856 M2486 968 C2546 968 2554 932 2554 900" stroke="#0e2215" stroke-width="40" stroke-linecap="round" fill="none"/>
+<path d="M2742 1080 L2742 846 M2742 922 C2676 922 2668 876 2668 836 M2742 952 C2812 952 2820 916 2820 880" stroke="#0e2215" stroke-width="48" stroke-linecap="round" fill="none"/>
+</svg>

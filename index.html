@@ -63,14 +63,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 @keyframes breath{0%,100%{opacity:.2}50%{opacity:1}}
 
 /* JUST IN — on the stage, in the spotlight */
-.justin .frame{position:absolute;left:330px;top:150px;width:620px;height:720px;z-index:4;padding:14px;opacity:0;
+.justin .frame{position:absolute;left:250px;top:150px;width:620px;height:720px;z-index:4;padding:14px;opacity:0;
   background:linear-gradient(145deg,#cdb98a,#7d6a45 40%,#d9c79a 60%,#6f5d3b);box-shadow:0 40px 90px rgba(0,0,0,.75),0 0 140px rgba(255,220,180,.12)}
 .on.justin .frame{animation:resolveF 3s .8s cubic-bezier(.2,.6,.2,1) forwards}
-/* the camera turns slowly right (-2 to +6 deg over 18 s), same yaw as fx.js: the frame turns about the viewer's eye in true 3D */
+/* the camera turns slowly left (+2 to -6 deg over 18 s), same yaw as fx.js: the frame turns about the viewer's eye in true 3D */
 .justin{perspective:1080px;perspective-origin:960px 594px}
-.justin .pan{position:absolute;inset:0;z-index:4;transform-origin:960px 594px 1080px;transform:rotateY(-2deg)}
+.justin .pan{position:absolute;inset:0;z-index:4;transform-origin:960px 594px 1080px;transform:rotateY(2deg)}
 .on.justin .pan{animation:turn 18s cubic-bezier(.45,0,.55,1) forwards}
-@keyframes turn{to{transform:rotateY(6deg)}}
+@keyframes turn{to{transform:rotateY(-6deg)}}
 @keyframes resolveF{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .justin .frame div{width:100%;height:100%;overflow:hidden;background:#111}
 .justin .frame img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}

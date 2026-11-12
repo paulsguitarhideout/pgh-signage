@@ -109,7 +109,7 @@ SCENES.road = { exposure: 1.35, rays: .2, light:[.5,.48], tex:['assets/tex/aspha
 ' o=vec4(col,clamp(mask,0.,1.));}'].join('\n') };
 
 // CURTAIN — velvet folds in a slow draft, a lacquered zigzag floor that mirrors them, a spotlight through haze.
-SCENES.curtain = { exposure: .85, rays: .3, light:[.333,1.02], tex:['assets/tex/velvet_nor_gl.jpg'], frag: [
+SCENES.curtain = { exposure: .85, rays: .3, light:[.292,1.02], tex:['assets/tex/velvet_nor_gl.jpg'], frag: [
 'float H(float x,float y){return .55*sin(x*24.+sin(y*2.4+T*.33)*.7+sin(x*1.3-T*.2)*.6)+.25*sin(x*51.+y*1.3+T*.25)+.12*sin(x*97.-T*.4);}',
 'vec3 velvet(vec2 p,float y,vec2 spot){float e=.0015;float h=H(p.x,y);float dh=(H(p.x+e,y)-H(p.x-e,y))/(2.*e);',
 '  vec3 n=normalize(vec3(-dh*.045,0.,1.));vec3 nt=texture(t0,p*vec2(3.,3.)).xyz*2.-1.;n=normalize(n+nt*.18);',
@@ -119,12 +119,12 @@ SCENES.curtain = { exposure: .85, rays: .3, light:[.333,1.02], tex:['assets/tex/
 '  vec3 base=vec3(.30,.010,.016);',
 '  return base*(diff*.6+.15)*fold*(.03+s*3.2)+vec3(.95,.25,.22)*sheen*(.02+s*1.1)*fold;}',
 'void main(){vec2 uv=gl_FragCoord.xy/R;float ar=R.x/R.y;',
-// The camera turns slowly to the right (-2 deg to +6 deg over 18 s) in a real 3D room: the curtain is the wall plane z=D,
+// The camera turns slowly to the left (+2 deg to -6 deg over 18 s) in a real 3D room: the curtain is the wall plane z=D,
 // the floor is the plane y=-h. The CSS frame in screen.html turns with the same yaw, so it stays in its spotlight.
-' float yaw=radians(-2.+8.*smoothstep(0.,18.,T));float hz=.45,h=1.,D=6.67;float k=D;',
+' float yaw=radians(2.-8.*smoothstep(0.,18.,T));float hz=.45,h=1.,D=6.67;float k=D;',
 ' vec3 d=normalize(vec3((uv.x-.5)*ar,uv.y-hz,1.));float cy=cos(yaw),sy=sin(yaw);d=vec3(cy*d.x+sy*d.z,d.y,-sy*d.x+cy*d.z);',
 ' float tw=D/d.z;vec3 W=d*tw;vec2 p=vec2(W.x/k+ar*.5,W.y/k+hz);',
-' vec2 spot=vec2(ar*.333,1.02);vec3 col;float tf=d.y<0.?-h/d.y:1e9;',
+' vec2 spot=vec2(ar*.292,1.02);vec3 col;float tf=d.y<0.?-h/d.y:1e9;',
 ' if(tw<=tf){col=velvet(p,p.y,spot);col*=smoothstep(-h,-h+.4,W.y)*.6+.4;}',
 ' else{vec3 F=d*tf;float xs=(spot.x-ar*.5)*k;',
 '   float v=fract(F.z*1.8+abs(fract(F.x*.9)-.5)*1.4);float aa=min(fwidth(v),.25);',

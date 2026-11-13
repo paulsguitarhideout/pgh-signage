@@ -124,17 +124,39 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 @keyframes lg{0%,46%{opacity:0}48%,82%{opacity:1}84%,100%{opacity:0}}
 @keyframes la{0%,84%{opacity:0}86%,98%{opacity:1}100%{opacity:0}}
 
-/* TV mode: video backgrounds, decorations baked into the video are hidden, text animates with opacity/position only (cheap on TVs). */
-.slide video.bgv{position:absolute;top:0;right:0;bottom:0;left:0;width:1920px;height:1080px;object-fit:cover;z-index:0}
-.tv #gl,.tv canvas.motes,.tv .welcome .mark,.tv .welcome .breath,.tv .lessons .label,.tv .lessons .pivot,.tv .lessons .arm,.tv .wire,.tv .signal{display:none!important}
+/* LITE (TV) mode: picture backgrounds with slow camera moves, drifting fog, and text that animates with opacity/position only.
+   Everything here is transform/opacity, which TV browsers composite smoothly. No WebGL, no filters, no blend modes. */
+.bgimg{position:absolute;top:0;left:0;width:1920px;height:1080px;background-size:cover;background-position:center;z-index:0;transform:scale(1.06)}
+.on .bgimg{animation:drift 16s linear forwards}
+@keyframes drift{from{transform:scale(1.06) translateX(0)}to{transform:scale(1.06) translateX(-40px)}}
+.on.webuy .bgimg{animation:drive 16s ease-in forwards;transform-origin:50% 52%}
+@keyframes drive{from{transform:scale(1)}to{transform:scale(1.18)}}
+.on.welcome .bgimg{animation:rise 16s ease-out forwards}
+@keyframes rise{from{transform:scale(1.1) translateY(30px)}to{transform:scale(1.04) translateY(0)}}
+.on.justin .bgimg{animation:sway 16s ease-in-out forwards}
+@keyframes sway{from{transform:scale(1.06) translateX(20px)}to{transform:scale(1.06) translateX(-20px)}}
+.fog{position:absolute;left:0;bottom:-60px;width:2400px;height:700px;background:url(assets/fog.png) repeat-x;background-size:2400px 700px;z-index:1;opacity:.4}
+.fog.f2{left:-480px;bottom:-160px;height:820px;background-size:2400px 820px;opacity:.25;transform:scaleX(-1)}
+.on .fog.f1{animation:fogL 40s linear infinite}
+.on .fog.f2{animation:fogR 55s linear infinite}
+@keyframes fogL{from{transform:translateX(0)}to{transform:translateX(-480px)}}
+@keyframes fogR{from{transform:scaleX(-1) translateX(0)}to{transform:scaleX(-1) translateX(-480px)}}
+.glint{position:absolute;left:0;top:640px;width:500px;height:440px;z-index:1;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,236,200,.22),transparent)}
+.on .glint{animation:glint 7s 1.5s ease-in-out infinite}
+@keyframes glint{0%{opacity:0;transform:translateX(-500px)}20%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translateX(1920px)}}
+.tv #gl,.tv canvas.motes{display:none!important}
+.tv .welcome .mark{filter:none!important}
+.tv .on.welcome .mark{animation:markIn 4s 1.2s ease-out forwards!important}
+@keyframes markIn{from{opacity:0;transform:translateY(24px)}to{opacity:.96;transform:none}}
+.tv .lessons .label{filter:none!important}
+.tv .signal .lamp b{mix-blend-mode:normal!important}
 .tv .rv,.tv .hours tr,.tv .justin .frame{filter:none!important}
 .tv .rv{letter-spacing:normal}
 .tv .kicker.rv{letter-spacing:.5em}
 .tv .headline.rv{letter-spacing:-.005em}
 .tv .on .rv,.tv .on .kicker.rv,.tv .on .headline.rv,.tv .on.hours tr{animation-name:tvfade!important;animation-duration:1.6s!important}
 @keyframes tvfade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.tv .slide.on{animation-duration:1.4s}
-.tv .slide.off{animation-duration:1.4s}
+.tv .slide.on,.tv .slide.off{animation-duration:1.4s}
 </style>
 </head>
 <body>
@@ -143,7 +165,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 // Render resolution. TVs have weak GPUs, so the scenes draw at a fraction of 1920x1080 and are scaled up
 // (grain and glow hide the softness). ?scale= overrides; otherwise the TV starts at 0.5 and the page steps
 // down by itself (remembered on the TV) if it can't hold a smooth frame rate.
-(function(){ var q0=new URLSearchParams(location.search); var VIDEO_READY=false; /* flip to true once clips/scenes/*.mp4 are uploaded */ window.FX_VIDEO = (VIDEO_READY || q0.get('video')) && !q0.get('live') && !q0.get('capture'); if(window.FX_VIDEO) document.documentElement.classList.add('tv'); })();
+(function(){ var q0=new URLSearchParams(location.search); window.FX_VIDEO = !q0.get('live') && !q0.get('capture'); /* LITE mode: what the TVs run */ if(window.FX_VIDEO) document.documentElement.classList.add('tv'); })();
 (function(){ var q=new URLSearchParams(location.search), s=q.get('scale'), saved=null;
   try{ saved=localStorage.getItem('pgh-scale'); }catch(e){}
   window.FX_SCALE = s ? +s : (q.get('capture') ? 1 : (saved ? +saved : 0.5));
@@ -162,8 +184,10 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){retur
 function rv(s, cls, delay){ return s ? '<div class="'+cls+' rv" style="animation-delay:'+delay+'s">'+esc(s)+'</div>' : ''; }
 function block(s, t0){ return rv(s.kicker,'kicker',t0)+rv(s.headline,'headline',t0+.7)+rv(s.line,'line',t0+1.9)+'<div class="rule" style="animation-delay:'+(t0+2.6)+'s"></div>'; }
 function scene(cls, fx, inner, extra){
-  // TV mode: the scene is a pre-rendered video (the TV's video chip plays it smoothly); only live text sits on top.
-  if (window.FX_VIDEO) return '<div class="slide '+cls+'"'+(extra||'')+'><video class="bgv" src="clips/scenes/'+cls+'.mp4" muted playsinline preload="auto"></video>'+inner+'</div>';
+  // LITE (TV) mode: the scene is a still picture with cheap motion on top (transform/opacity only); text stays live.
+  if (window.FX_VIDEO) { var fog=(cls==='welcome'||cls==='webuy'||cls==='hours')?'<div class="fog f1"></div><div class="fog f2"></div>':'';
+    var glint=(cls==='bench')?'<div class="glint"></div>':'';
+    return '<div class="slide '+cls+'"'+(extra||'')+'><div class="bgimg" style="background-image:url(assets/scenes/'+cls+'.jpg)"></div>'+fog+glint+inner+'</div>'; }
   return '<div class="slide '+cls+'" data-fx="'+fx+'"'+(extra||'')+'>'+inner+'</div>'; }
 function motes(n, warm){ return '<canvas class="motes" width="1920" height="1080" data-n="'+n+'"'+(warm?' data-warm':'')+'></canvas>'; }
 
@@ -201,6 +225,7 @@ function build(set){
   box.innerHTML = set.slides.map(function(s){ return (R[s.type]||function(){return '<div class="slide"></div>';})(s); }).join('');
   slides = [].slice.call(box.querySelectorAll('.slide'));
   var names = slides.map(function(el){ return el.getAttribute('data-fx'); }).filter(Boolean);
+  if (window.FX_VIDEO) { [].forEach.call(box.querySelectorAll('img.mark,img.label'), function(im){ im.src='assets/logo-cream.png'; }); }
   if (window.FX && !window.FX_VIDEO) { FX.init(gl, names); slides.forEach(function(el){ FX.attachMotes(el); }); window.__ready=function(){ return FX.ready(names); }; }
   if (ONLY!=null){ show(+ONLY); return; }
   cur=-1; next(set);
@@ -220,7 +245,7 @@ function next(set){
   timer=setTimeout(function(){ if(cur===slides.length-1) load(); else next(set); }, (set.slides[cur].seconds||10)*1000/SPEED);
 }
 // Frame-exact capture for preview videos: ?capture=1, then window.__frame(seconds) poses every animation at that time.
-if (q.get('bgonly')) { var st=document.createElement('style'); st.textContent='.text,.flag,.justin .frame{visibility:hidden!important}'; document.head.appendChild(st); }
+if (q.get('bgonly')) { var st=document.createElement('style'); st.textContent='.text,.flag,.justin .frame'+(q.get('bgonly')==='2'?',canvas.motes,.mark,.breath,.label,.pivot,.arm,.wire,.signal':'')+'{visibility:hidden!important}'; document.head.appendChild(st); }
 if (q.get('capture')) { FX.manual = true; window.__frame = function(t){ document.getAnimations().forEach(function(a){ a.pause(); a.currentTime = t*1000; }); FX.renderAt(t); }; }
 // Re-read the set at the end of every loop, so a pushed set shows up on the next pass with no reload.
 // What plays is decided by live.json ({"set": "<name>"}), unless ?set= overrides it. Changing live.json is "push it live".

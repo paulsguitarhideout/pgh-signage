@@ -127,7 +127,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 </head>
 <body>
 <div id="stage"></div>
-<script>if(/[?&]capture=/.test(location.search)) window.FX_SCALE=+(new URLSearchParams(location.search).get("scale")||1);</script>
+<script>
+// Render resolution. TVs have weak GPUs, so the scenes draw at a fraction of 1920x1080 and are scaled up
+// (grain and glow hide the softness). ?scale= overrides; otherwise the TV starts at 0.5 and the page steps
+// down by itself (remembered on the TV) if it can't hold a smooth frame rate.
+(function(){ var q=new URLSearchParams(location.search), s=q.get('scale'), saved=null;
+  try{ saved=localStorage.getItem('pgh-scale'); }catch(e){}
+  window.FX_SCALE = s ? +s : (q.get('capture') ? 1 : (saved ? +saved : 0.5));
+  window.FX_AUTO = !s && !q.get('capture');
+})();
+</script>
 <script src="fx.js"></script>
 <script>
 // ?set=default (file in sets/), ?slide=N shows one slide only (for previews), ?speed=N divides durations.

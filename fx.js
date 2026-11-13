@@ -295,14 +295,22 @@ function step(now){
   if(cur.slide&&cur.slide._motes) cur.slide._motes(cur.t);
   if(prev&&prev.slide&&prev.slide._motes) prev.slide._motes(prev.t);
 }
-function tick(){ raf=null; if(!cur) return; step(performance.now()/1000); if(!FX.manual) raf=requestAnimationFrame(tick); }
+// Frame pacing: cap at 30 fps (half the TV's work, still smooth for slow scenes). If the TV can't hold ~20 fps
+// over the first 8 seconds, step the render scale down (0.5 -> 0.35 -> 0.25), remember it, and reload.
+var lastDraw=0, perfStart=0, perfFrames=0, perfDone=false;
+function tick(now){ raf=null; if(!cur) return; if(!FX.manual) raf=requestAnimationFrame(tick);
+  now=now||performance.now(); if(now-lastDraw<1000/31) return; lastDraw=now;
+  step(now/1000);
+  if(window.FX_AUTO && !perfDone){ if(!perfStart){ perfStart=now; perfFrames=0; } perfFrames++;
+    if(now-perfStart>8000){ perfDone=true; var fps=perfFrames*1000/(now-perfStart), sc=window.FX_SCALE||1;
+      if(fps<20 && sc>0.26){ var next=sc>0.4?0.35:0.25; try{ localStorage.setItem('pgh-scale',String(next)); }catch(e){} location.reload(); } } } }
 window.FX={
   manual:false,
   init:function(canvas,names){ if(!eng||eng.canvas!==canvas){ eng=Engine(canvas); if(eng) eng.canvas=canvas; } if(eng) eng.preload(names); return !!eng; },
   ready:function(names){ return !eng || eng.ready(names); },
   attachMotes:function(slide){ var mc=slide.querySelector('canvas.motes'); if(mc) slide._motes=motes(mc,+(mc.getAttribute('data-n')||60),mc.hasAttribute('data-warm')); },
   // Switch scenes; the previous one keeps moving under the GPU dissolve.
-  go:function(name,m,slide){ var now=performance.now()/1000; prev=cur; cur={name:name,m:m||0,t0:now,slide:slide}; switchAt=now;
+  go:function(name,m,slide){ var now=performance.now()/1000; lastDraw=0; prev=cur; cur={name:name,m:m||0,t0:now,slide:slide}; switchAt=now;
     if(!FX.manual&&!raf) raf=requestAnimationFrame(tick); },
   // Frame-exact capture: pose the current scene at scene time t (no dissolve).
   renderAt:function(t){ if(!cur) return; cur.t0=0; prev=null; switchAt=-1e9; step(t); }

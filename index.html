@@ -157,6 +157,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 .tv .on .rv,.tv .on .kicker.rv,.tv .on .headline.rv,.tv .on.hours tr{animation-name:tvfade!important;animation-duration:1.6s!important}
 @keyframes tvfade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .tv .slide.on,.tv .slide.off{animation-duration:1.4s}
+
+/* Scene videos: decorations are part of the video, so the HTML copies are hidden; the still sits under the video until it starts. */
+.slide video.bgv{position:absolute;top:0;left:0;width:1920px;height:1080px;object-fit:cover;z-index:0;background:transparent}
+.sv .bgimg.still{animation:none!important;transform:none!important}
+.sv .welcome .mark,.sv .welcome .breath,.sv .lessons .label,.sv .lessons .pivot,.sv .lessons .arm,.sv .wire,.sv .signal{display:none!important}
 </style>
 </head>
 <body>
@@ -165,7 +170,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 // Render resolution. TVs have weak GPUs, so the scenes draw at a fraction of 1920x1080 and are scaled up
 // (grain and glow hide the softness). ?scale= overrides; otherwise the TV starts at 0.5 and the page steps
 // down by itself (remembered on the TV) if it can't hold a smooth frame rate.
-(function(){ var q0=new URLSearchParams(location.search); window.FX_VIDEO = !q0.get('live') && !q0.get('capture'); /* LITE mode: what the TVs run */ if(window.FX_VIDEO) document.documentElement.classList.add('tv'); })();
+(function(){ var q0=new URLSearchParams(location.search); window.FX_VIDEO = !q0.get('live') && !q0.get('capture'); /* LITE mode: what the TVs run */
+  /* SCENE_VIDEO: each scene's animated background plays as a video (the TV's video chip, like Netflix); text stays live on top. */
+  window.SCENE_VIDEO = false; if(window.FX_VIDEO && window.SCENE_VIDEO) document.documentElement.classList.add('sv'); if(window.FX_VIDEO) document.documentElement.classList.add('tv'); })();
 (function(){ var q=new URLSearchParams(location.search), s=q.get('scale'), saved=null;
   try{ saved=localStorage.getItem('pgh-scale'); }catch(e){}
   window.FX_SCALE = s ? +s : (q.get('capture') ? 1 : (saved ? +saved : 0.5));
@@ -185,6 +192,7 @@ function rv(s, cls, delay){ return s ? '<div class="'+cls+' rv" style="animation
 function block(s, t0){ return rv(s.kicker,'kicker',t0)+rv(s.headline,'headline',t0+.7)+rv(s.line,'line',t0+1.9)+'<div class="rule" style="animation-delay:'+(t0+2.6)+'s"></div>'; }
 function scene(cls, fx, inner, extra){
   // LITE (TV) mode: the scene is a still picture with cheap motion on top (transform/opacity only); text stays live.
+  if (window.FX_VIDEO && window.SCENE_VIDEO) return '<div class="slide '+cls+'"'+(extra||'')+'><div class="bgimg still" style="background-image:url(assets/scenes/'+cls+'.jpg)"></div><video class="bgv" src="clips/scenes/'+cls+'.mp4" muted playsinline preload="auto"></video>'+inner+'</div>';
   if (window.FX_VIDEO) { var fog=(cls==='welcome'||cls==='webuy'||cls==='hours')?'<div class="fog f1"></div><div class="fog f2"></div>':'';
     var glint=(cls==='bench')?'<div class="glint"></div>':'';
     return '<div class="slide '+cls+'"'+(extra||'')+'><div class="bgimg" style="background-image:url(assets/scenes/'+cls+'.jpg)"></div>'+fog+glint+inner+'</div>'; }

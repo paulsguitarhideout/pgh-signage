@@ -4,11 +4,11 @@
   "slides": [
     {
       "type": "welcome",
-      "seconds": 18
+      "seconds": 14
     },
     {
       "type": "just-in",
-      "seconds": 18,
+      "seconds": 14,
       "sample": true,
       "items": [
         {
@@ -21,28 +21,28 @@
     },
     {
       "type": "bench",
-      "seconds": 18,
+      "seconds": 14,
       "kicker": "On the bench",
       "headline": "Setups & repairs",
       "line": "Ask at the counter. We'll look it over with you."
     },
     {
       "type": "lessons",
-      "seconds": 18,
+      "seconds": 14,
       "kicker": "Lessons",
       "headline": "Learn to play here",
       "line": "Ask at the counter about lesson times."
     },
     {
       "type": "we-buy",
-      "seconds": 18,
+      "seconds": 14,
       "kicker": "Buy ◆ Sell ◆ Talk guitars",
       "headline": "We buy guitars",
       "line": "Bring it in. We'll take a look."
     },
     {
       "type": "hours",
-      "seconds": 16,
+      "seconds": 14,
       "placeholder": true,
       "kicker": "Hours",
       "headline": "Holiday hours",

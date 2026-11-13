@@ -21,15 +21,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--night)}
 
 /* slow dissolve between scenes, with a slight settle */
-.slide{position:absolute;inset:0;opacity:0;visibility:hidden;z-index:2}
-#slides{position:absolute;inset:0;z-index:1}
+.slide{position:absolute;top:0;right:0;bottom:0;left:0;opacity:0;visibility:hidden;z-index:2}
+#slides{position:absolute;top:0;right:0;bottom:0;left:0;z-index:1}
 #gl{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:0}
 .slide.on{visibility:visible;z-index:3;animation:dissolve 2.6s ease-in-out forwards}
 .slide.off{visibility:visible;z-index:2;animation:fadeout 2.6s ease-in-out forwards}
 @keyframes fadeout{from{opacity:1}to{opacity:0}}
 @keyframes dissolve{from{opacity:0}to{opacity:1}}
 .slide.video{background:#000}
-.slide canvas{position:absolute;inset:0;width:1920px;height:1080px}
+.slide canvas{position:absolute;top:0;right:0;bottom:0;left:0;width:1920px;height:1080px}
 .slide canvas.motes{pointer-events:none;z-index:3}
 
 .flag{position:absolute;right:40px;top:40px;font:600 22px/1 var(--sans);letter-spacing:.2em;background:#c00;color:#fff;padding:12px 20px;z-index:30}
@@ -68,7 +68,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 .on.justin .frame{animation:resolveF 3s .8s cubic-bezier(.2,.6,.2,1) forwards}
 /* the camera turns slowly left (+2 to -6 deg over 18 s), same yaw as fx.js: the frame turns about the viewer's eye in true 3D */
 .justin{perspective:1080px;perspective-origin:960px 594px}
-.justin .pan{position:absolute;inset:0;z-index:4;transform-origin:960px 594px 1080px;transform:rotateY(2deg)}
+.justin .pan{position:absolute;top:0;right:0;bottom:0;left:0;z-index:4;transform-origin:960px 594px 1080px;transform:rotateY(2deg)}
 .on.justin .pan{animation:turn 18s cubic-bezier(.45,0,.55,1) forwards}
 @keyframes turn{to{transform:rotateY(-6deg)}}
 @keyframes resolveF{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
@@ -112,7 +112,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 .signal .rod{width:6px;height:90px;margin:0 auto;background:#14130f}
 .signal .box{width:150px;height:420px;border-radius:14px;background:linear-gradient(90deg,#0c0d0b,#23251f 50%,#0c0d0b);padding:22px 25px;box-shadow:0 30px 60px rgba(0,0,0,.6)}
 .signal .lamp{position:relative;width:100px;height:100px;border-radius:50%;background:#16100e;margin-bottom:26px;box-shadow:inset 0 6px 14px rgba(0,0,0,.9)}
-.signal .lamp i{position:absolute;inset:0;border-radius:50%;opacity:0}
+.signal .lamp i{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;opacity:0}
 .signal .lamp b{position:absolute;left:50%;top:50%;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none}
 .signal .r i{background:radial-gradient(circle at 40% 40%,#ffd0c0,#ff3b2f 45%,#8a0c08)} .signal .r b{background:radial-gradient(circle,rgba(255,60,40,.6),rgba(255,60,40,.14) 30%,transparent 60%)}
 .signal .a i{background:radial-gradient(circle at 40% 40%,#fff0c8,#ffb347 45%,#8a5208)} .signal .a b{background:radial-gradient(circle,rgba(255,180,70,.55),rgba(255,180,70,.12) 30%,transparent 60%)}
@@ -123,6 +123,18 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 @keyframes lr{0%,44%{opacity:1}46%,100%{opacity:0}}
 @keyframes lg{0%,46%{opacity:0}48%,82%{opacity:1}84%,100%{opacity:0}}
 @keyframes la{0%,84%{opacity:0}86%,98%{opacity:1}100%{opacity:0}}
+
+/* TV mode: video backgrounds, decorations baked into the video are hidden, text animates with opacity/position only (cheap on TVs). */
+.slide video.bgv{position:absolute;top:0;right:0;bottom:0;left:0;width:1920px;height:1080px;object-fit:cover;z-index:0}
+.tv #gl,.tv canvas.motes,.tv .welcome .mark,.tv .welcome .breath,.tv .lessons .label,.tv .lessons .pivot,.tv .lessons .arm,.tv .wire,.tv .signal{display:none!important}
+.tv .rv,.tv .hours tr,.tv .justin .frame{filter:none!important}
+.tv .rv{letter-spacing:normal}
+.tv .kicker.rv{letter-spacing:.5em}
+.tv .headline.rv{letter-spacing:-.005em}
+.tv .on .rv,.tv .on .kicker.rv,.tv .on .headline.rv,.tv .on.hours tr{animation-name:tvfade!important;animation-duration:1.6s!important}
+@keyframes tvfade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.tv .slide.on{animation-duration:1.4s}
+.tv .slide.off{animation-duration:1.4s}
 </style>
 </head>
 <body>
@@ -131,6 +143,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 // Render resolution. TVs have weak GPUs, so the scenes draw at a fraction of 1920x1080 and are scaled up
 // (grain and glow hide the softness). ?scale= overrides; otherwise the TV starts at 0.5 and the page steps
 // down by itself (remembered on the TV) if it can't hold a smooth frame rate.
+(function(){ var q0=new URLSearchParams(location.search); var VIDEO_READY=false; /* flip to true once clips/scenes/*.mp4 are uploaded */ window.FX_VIDEO = (VIDEO_READY || q0.get('video')) && !q0.get('live') && !q0.get('capture'); if(window.FX_VIDEO) document.documentElement.classList.add('tv'); })();
 (function(){ var q=new URLSearchParams(location.search), s=q.get('scale'), saved=null;
   try{ saved=localStorage.getItem('pgh-scale'); }catch(e){}
   window.FX_SCALE = s ? +s : (q.get('capture') ? 1 : (saved ? +saved : 0.5));
@@ -143,12 +156,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none}
 var q = new URLSearchParams(location.search);
 var SET = q.get('set') || 'default', ONLY = q.get('slide'), SPEED = +q.get('speed') || 1;
 var stage = document.getElementById('stage');
-function fit(){ var s=Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform='translate('+((innerWidth-1920*s)/2)+'px,'+((innerHeight-1080*s)/2)+'px) scale('+s+')'; }
+function fit(){ var W=window.innerWidth||1920, H=window.innerHeight||1080, s=Math.max(W/1920, H/1080); stage.style.transform='translate('+((W-1920*s)/2)+'px,'+((H-1080*s)/2)+'px) scale('+s+')'; }
 addEventListener('resize', fit); fit();
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function rv(s, cls, delay){ return s ? '<div class="'+cls+' rv" style="animation-delay:'+delay+'s">'+esc(s)+'</div>' : ''; }
 function block(s, t0){ return rv(s.kicker,'kicker',t0)+rv(s.headline,'headline',t0+.7)+rv(s.line,'line',t0+1.9)+'<div class="rule" style="animation-delay:'+(t0+2.6)+'s"></div>'; }
-function scene(cls, fx, inner, extra){ return '<div class="slide '+cls+'" data-fx="'+fx+'"'+(extra||'')+'>'+inner+'</div>'; }
+function scene(cls, fx, inner, extra){
+  // TV mode: the scene is a pre-rendered video (the TV's video chip plays it smoothly); only live text sits on top.
+  if (window.FX_VIDEO) return '<div class="slide '+cls+'"'+(extra||'')+'><video class="bgv" src="clips/scenes/'+cls+'.mp4" muted playsinline preload="auto"></video>'+inner+'</div>';
+  return '<div class="slide '+cls+'" data-fx="'+fx+'"'+(extra||'')+'>'+inner+'</div>'; }
 function motes(n, warm){ return '<canvas class="motes" width="1920" height="1080" data-n="'+n+'"'+(warm?' data-warm':'')+'></canvas>'; }
 
 var R = {
@@ -185,7 +201,7 @@ function build(set){
   box.innerHTML = set.slides.map(function(s){ return (R[s.type]||function(){return '<div class="slide"></div>';})(s); }).join('');
   slides = [].slice.call(box.querySelectorAll('.slide'));
   var names = slides.map(function(el){ return el.getAttribute('data-fx'); }).filter(Boolean);
-  if (window.FX) { FX.init(gl, names); slides.forEach(function(el){ FX.attachMotes(el); }); window.__ready=function(){ return FX.ready(names); }; }
+  if (window.FX && !window.FX_VIDEO) { FX.init(gl, names); slides.forEach(function(el){ FX.attachMotes(el); }); window.__ready=function(){ return FX.ready(names); }; }
   if (ONLY!=null){ show(+ONLY); return; }
   cur=-1; next(set);
 }
@@ -196,7 +212,7 @@ function show(i){
       var p=el.querySelector('[data-price]'); if(p) countUp(p);
       var v=el.querySelector('video'); if(v){ try{ v.currentTime=0; }catch(e){} var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } }
     else { el.classList.remove('on'); if(was){ el.classList.add('off'); live.push(el); } else { var ov=el.querySelector('video'); if(ov) ov.pause(); } } });
-  var el=slides[i]; if (window.FX && el.getAttribute('data-fx')) FX.go(el.getAttribute('data-fx'), +(el.getAttribute('data-m')||0), el);
+  var el=slides[i]; if (window.FX && !window.FX_VIDEO && el.getAttribute('data-fx')) FX.go(el.getAttribute('data-fx'), +(el.getAttribute('data-m')||0), el);
 }
 function next(set){
   cur=(cur+1)%slides.length; show(cur);
@@ -204,6 +220,7 @@ function next(set){
   timer=setTimeout(function(){ if(cur===slides.length-1) load(); else next(set); }, (set.slides[cur].seconds||10)*1000/SPEED);
 }
 // Frame-exact capture for preview videos: ?capture=1, then window.__frame(seconds) poses every animation at that time.
+if (q.get('bgonly')) { var st=document.createElement('style'); st.textContent='.text,.flag,.justin .frame{visibility:hidden!important}'; document.head.appendChild(st); }
 if (q.get('capture')) { FX.manual = true; window.__frame = function(t){ document.getAnimations().forEach(function(a){ a.pause(); a.currentTime = t*1000; }); FX.renderAt(t); }; }
 // Re-read the set at the end of every loop, so a pushed set shows up on the next pass with no reload.
 // What plays is decided by live.json ({"set": "<name>"}), unless ?set= overrides it. Changing live.json is "push it live".
